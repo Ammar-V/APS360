@@ -1,0 +1,23 @@
+def interpolate(imageOne, imageTwo, model, frames):
+    x = torch.stack([imageOne,imageTwo])
+    embedding = model.encoder(x)
+    e1 = embedding[0] # embedding of first image
+    e2 = embedding[1] # embedding of second image
+
+    embedding_values = []
+    for i in range(0, frames): # set range of how many images inbetween two input images
+        e = e1 * (i / frames) + e2 * (frames - i) / frames
+        embedding_values.append(e)
+    embedding_values = torch.stack(embedding_values)
+
+    recons = model.decoder(embedding_values)
+
+    # sanity check plotting to make sure images are properly interpolating
+    plt.figure(figsize = (frames, 2))
+    for i, recon in enumerate(recons.detach().numpy()):
+        plt.subplot(2, frames, i+1)
+        plt.imshow(recon[0])
+    plt.subplot(2, frames, frames + 1)
+    plt.imshow(x2[0])
+    plt.subplot(2, frames, frames * 2)
+    plt.imshow(x1[0])
