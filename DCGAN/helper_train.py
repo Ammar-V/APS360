@@ -7,8 +7,10 @@ import torch
 import torch.nn.functional as F
 import torchvision
 import torch.autograd
-import random as rand
 
+import random as rand
+import matplotlib.pyplot as plt
+import numpy as np
 
 def train_classifier_simple_v1(num_epochs, model, optimizer, device,
                                train_loader, valid_loader=None,
@@ -316,6 +318,15 @@ def train_gan_v1(num_epochs, model, optimizer_gen, optimizer_discr,
             log_dict['images_from_noise_per_epoch'].append(
                 torchvision.utils.make_grid(fake_images, padding=2, normalize=True))
 
+            if epoch % 5 == 0:
+                print('Saving fig...')
+                plt.figure(figsize=(8, 8))
+                plt.axis('off')
+                plt.title(f'Generated images at epoch {epoch}')
+                plt.imsave(f'viz/{epoch}.png', np.clip(np.transpose(log_dict['images_from_noise_per_epoch'][-1].detach().cpu().numpy(), (1, 2, 0)), 0, 1))
+                # plt.savefig(f'viz/{epoch}.png')
+            if epoch % 10 == 0 and save_model is not None:
+                torch.save(model.state_dict(), save_model)
 
         print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
     
@@ -601,7 +612,15 @@ def train_wgan_v1(num_epochs, model, optimizer_gen, optimizer_discr,
             fake_images = model.generator_forward(fixed_noise).detach().cpu()
             log_dict['images_from_noise_per_epoch'].append(
                 torchvision.utils.make_grid(fake_images, padding=2, normalize=True))
-
+            if epoch % 5 == 0:
+                print('Saving fig...')
+                plt.figure(figsize=(8, 8))
+                plt.axis('off')
+                plt.title(f'Generated images at epoch {epoch}')
+                plt.imsave(f'viz/{epoch}.png', np.clip(np.transpose(log_dict['images_from_noise_per_epoch'][-1].detach().cpu().numpy(), (1, 2, 0)), 0, 1))
+                # plt.savefig(f'viz/{epoch}.png')
+            if epoch % 10 == 0 and save_model is not None:
+                torch.save(model.state_dict(), f'viz/{epoch}_' + save_model)
 
         print('Time elapsed: %.2f min' % ((time.time() - start_time)/60))
     
