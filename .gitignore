@@ -1,6 +1,6 @@
 runs/
 data/
-stylegan2-ada-pytorch
+# stylegan2-ada-pytorch
 
 *.png
 *.pt
